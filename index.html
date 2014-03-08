@@ -15,51 +15,89 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Woothee: User-Agent parser/classifier for multi languages</h1>
-        <p></p>
-
-
-        <p class="view"><a href="https://github.com/woothee">View My GitHub Profile</a></p>
-
+        <h1>Woothee</h1>
+        <p>User-Agent parser/classifier for multi languages</p>
+        <p class="view"><a href="https://github.com/woothee/woothee">GitHub Repository</a></p>
       </header>
+
       <section>
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+        <h3><a name="whats-this" class="anchor" href="#whats-this"><span class="octicon octicon-link"></span></a>What's this?</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+        User-agent string parser for many languages, which does:
+        <ul>
+          <li>parse user-agent strings and returns name/category/version/os/vendor</li>
+          <li>works reasonably fast</li>
+          <li>returns just same results between language implementations</li>
+          <li>share a test case between language implementations</li>
+        </ul>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+        Woothee implementations are:
+        <ul>
+          <li>Java (and Hive UDF)</li>
+          <li>Ruby</li>
+          <li>Perl</li>
+          <li>Python</li>
+          <li>PHP</li>
+          <li>Node.js (browser / node)</li>
+        </ul>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+        <h3><a name="why-new-project" class="anchor" href="#why-new-project"><span class="octicon octicon-link"></span></a>Why new project?</h3>
+        <p>
+        We needs just same logic over 2 or more programming languages, for use on various frameworks, middlewares and environments.<br />
+        Most important data of this project is only single set of return values, and set of test cases, for equality of results of another languages implementations.
+        </p>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+        <h3><a name="demo" class="anchor" href="#demo"><span class="octicon octicon-link"></span></a>Demo</h3>
+        
+        <div>
+          <h4>User-Agent String:</h4>
+          <input type="text" id="useragent" size="80" />
+          <button id="update">Update</button>
+          <br />
+        </div>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+        <div>
+          <h4>Parse result:</h4>
+          <table>
+            <tr><th>lang</th><th>name</th><th>category</th><th>os</th><th>version</th><th>vendor</th></tr>
+            <tr id="js">
+              <th>javascript</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
+          </table>
+        </div>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+        <h3><a name="feedback" class="anchor" href="#feedback"><span class="octicon octicon-link"></span></a>Feedback</h3>
+        <div>
+          Please add issues <a href="https://github.com/woothee/woothee/issues">here</a> if you found wrong result for any user-agents.
+          <br />
+          Or, tell <a href="https://twitter.com/tagomoris">@tagomoris</a> simply.
+        </div>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
-
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
-
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
-
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
-
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
       </section>
       <footer>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-    
+    <script src="javascripts/jquery-2.1.0.min.js"></script>
+    <script src="javascripts/woothee.js"></script>
+    <script>
+    function update(useragent){
+      updateJavascript(useragent);
+    }
+    function updateRow(id, r){
+      var row = $(id);
+      ['name','category','os','version','vendor'].forEach(function(attr){ row.find('.' + attr).text(r[attr]); });
+    }
+    function updateJavascript(useragent){
+      var r = woothee.parse(useragent);
+      updateRow('#js', r);
+    }
+    $(function(){
+      $('#useragent').val(navigator.userAgent);
+      updateJavascript(navigator.userAgent);
+    });
+    </script>
   </body>
 </html>
