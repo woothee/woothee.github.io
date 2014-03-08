@@ -97,6 +97,7 @@
     $(function(){
       $('#useragent').val(navigator.userAgent);
       updateJavascript(navigator.userAgent);
+      $('#update').click(function(e){ e.preventDefault(); update($('#useragent').val()); });
     });
     </script>
   </body>
