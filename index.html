@@ -64,6 +64,22 @@
               <th>javascript</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
+            <tr id="ruby">
+              <th>ruby</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
+            <tr id="jruby">
+              <th>java</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
+            <tr id="perl">
+              <th>perl</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
+            <tr id="node">
+              <th>node</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
           </table>
         </div>
 
@@ -85,6 +101,10 @@
     <script>
     function update(useragent){
       updateJavascript(useragent);
+      updateLang(useragent, 'ruby');
+      updateLang(useragent, 'jruby');
+      updateLang(useragent, 'perl');
+      updateLang(useragent, 'node');
     }
     function updateRow(id, r){
       var row = $(id);
@@ -93,6 +113,16 @@
     function updateJavascript(useragent){
       var r = woothee.parse(useragent);
       updateRow('#js', r);
+    }
+    function updateLang(useragent, lang){
+      var url = "http://woothee-" + lang + ".tagomor.is/parse";
+      $.getJSON(url, {ua: useragent}, function(data){
+    console.log({lang: lang, data: data});
+        var updated = $('tr#' + lang);
+        ['name','category','os','version','vendor'].forEach(function(field){
+          updated.find('td.' + field).text(data[field]);
+        });
+      });
     }
     $(function(){
       $('#useragent').val(navigator.userAgent);
