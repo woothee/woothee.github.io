@@ -61,23 +61,23 @@
           <table>
             <tr><th>lang</th><th>name</th><th>category</th><th>os</th><th>version</th><th>vendor</th></tr>
             <tr id="js">
-              <th class="lib">js</th>
+              <th class="lib" data-lang="js">js</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="ruby">
-              <th class="lib">ruby</th>
+              <th class="lib" data-lang="ruby">ruby</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="jruby">
-              <th class="lib">java</th>
+              <th class="lib data-lang="java"">java</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="perl">
-              <th class="lib">perl</th>
+              <th class="lib" data-lang="perl">perl</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="node">
-              <th class="lib">node</th>
+              <th class="lib" data-lang="node">node</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
           </table>
@@ -112,7 +112,7 @@
       var version = 'unknown';
       if (v)
         version = v;
-      row.find('th.lib').text( row.find('th.lib').text() + '(' + v + ')' );
+      row.find('th.lib').text( row.find('th.lib').data('lang') + '(' + version + ')' );
     }
     function updateJavascript(useragent){
       var r = woothee.parse(useragent);
@@ -121,11 +121,9 @@
     function updateLang(useragent, lang){
       var url = "http://woothee-" + lang + ".tagomor.is";
       $.getJSON(url + "/api", {ua: useragent}, function(data){
-        cosole.log("in callback");
         updateRow('tr#' + lang, data.result, data.version);
       })
         .fail(function() {
-          console.log("in fail");
           $.getJSON(url + "/parse", {ua: useragent}, function(data){
             updateRow('tr#' + lang, data);
           });
