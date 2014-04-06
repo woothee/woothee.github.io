@@ -69,7 +69,7 @@
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="jruby">
-              <th class="lib data-lang="java"">java</th>
+              <th class="lib" data-lang="java">java</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="perl">
@@ -109,7 +109,7 @@
     function updateRow(id, r, v){
       var row = $(id);
       ['name','category','os','version','vendor'].forEach(function(attr){ row.find('.' + attr).text(r[attr]); });
-      var version = 'unknown';
+      var version = '?.?.?';
       if (v)
         version = v;
       row.find('th.lib').text( row.find('th.lib').data('lang') + '(' + version + ')' );
