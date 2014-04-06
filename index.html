@@ -106,32 +106,28 @@
       updateLang(useragent, 'perl');
       updateLang(useragent, 'node');
     }
-    function updateRow(id, r){
+    function updateRow(id, r, v){
       var row = $(id);
       ['name','category','os','version','vendor'].forEach(function(attr){ row.find('.' + attr).text(r[attr]); });
+      var version = 'unknown';
+      if (v)
+        version = v;
+      row.find('th.lib').text( row.find('th.lib').text() + '(' + v + ')' );
     }
     function updateJavascript(useragent){
       var r = woothee.parse(useragent);
-      updateRow('#js', r);
+      updateRow('tr#js', r, woothee.VERSION);
     }
     function updateLang(useragent, lang){
       var url = "http://woothee-" + lang + ".tagomor.is";
       $.getJSON(url + "/api", {ua: useragent}, function(data){
-        var updated = $('tr#' + lang);
-        var lang = updated.find('th.lib');
-        lang.text( lang.text() + "(" + data.version + ")" );
-        ['name','category','os','version','vendor'].forEach(function(field){
-          updated.find('td.' + field).text(data.result[field]);
-        });
+        cosole.log("in callback");
+        updateRow('tr#' + lang, data.result, data.version);
       })
         .fail(function() {
+          console.log("in fail");
           $.getJSON(url + "/parse", {ua: useragent}, function(data){
-            var updated = $('tr#' + lang);
-            var lang = updated.find('th.lib');
-            lang.text( lang.text() + "(unknown)" );
-            ['name','category','os','version','vendor'].forEach(function(field){
-              updated.find('td.' + field).text(data[field]);
-            });
+            updateRow('tr#' + lang, data);
           });
         })
     }
