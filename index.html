@@ -112,7 +112,7 @@
       var version = '?.?.?';
       if (v)
         version = v;
-      row.find('th.lib').text( row.find('th.lib').data('lang') + '(' + version + ')' );
+      row.find('th.lib').text( row.find('th.lib').data('lang') + ' (' + version + ')' );
     }
     function updateJavascript(useragent){
       var r = woothee.parse(useragent);
