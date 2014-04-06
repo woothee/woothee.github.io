@@ -2,7 +2,11 @@
   var root = this;
   // embed: dataset, util, browser, mobilephone, crawler, appliance, misc, woothee
 
-  // GENERATED from dataset.yaml at Fri Feb  7 20:14:03 JST 2014 by tagomoris
+  // GENERATED from dataset.yaml at Sun Apr  6 15:41:23 JST 2014 by tagomoris
+
+  // Snapshot from package.json
+  var package_info = {"name":"woothee","version":"0.4.0","description":"User-Agent string parser (js implementation)","main":"./release/woothee","devDependencies":{"mocha":">= 1.7.0","chai":">= 1.3.0","js-yaml":">= 1.0.3","should":"~1.2.2"},"scripts":{"test":"make test"},"repository":{"type":"git","url":"https://github.com/woothee/woothee-js"},"author":"tagomoris","license":"Apache v2"};
+
   var dataset = {};
   (function(){
     var exports = dataset;
@@ -35,7 +39,7 @@
     ];
     var ATTRIBUTE_LIST = exports.ATTRIBUTE_LIST = [ATTRIBUTE_NAME, ATTRIBUTE_CATEGORY, ATTRIBUTE_OS, ATTRIBUTE_VENDOR, ATTRIBUTE_VERSION];
     var DATASET = {};
-    // GENERATED from dataset.yaml at Fri Feb  7 20:14:03 JST 2014 by tagomoris
+    // GENERATED from dataset.yaml at Sun Apr  6 15:41:22 JST 2014 by tagomoris
     var obj;
     obj = {label:'MSIE', name:'Internet Explorer', type:'browser'};
     obj['vendor'] = 'Microsoft';
@@ -398,6 +402,7 @@
       return true;
     };
     var chromePattern = /(?:Chrome|CrMo|CriOS)\/([.0-9]+)/;
+    var operaBlinkPattern = /OPR\/([.0-9]+)/;
     var safariPattern = /Version\/([.0-9]+)/;
     var challengeSafariChrome = exports.challengeSafariChrome = function(ua, result) {
       if (ua.indexOf('Safari/') < 0)
@@ -405,6 +410,14 @@
       var version = dataset.VALUE_UNKNOWN;
       var match;
       if ((match = chromePattern.exec(ua))) {
+        var matchOpera;
+        if ((matchOpera = operaBlinkPattern.exec(ua))) {
+          // Opera w/ blink
+          version = matchOpera[1];
+          updateMap(result, dataset.get('Opera'));
+          updateVersion(result, version);
+          return true;
+        }
         // Chrome
         version = match[1];
         updateMap(result, dataset.get('Chrome'));
@@ -1001,6 +1014,7 @@
   (function(){
     var exports = woothee;
     /* CODE: woothee.js */
+    var version = exports.VERSION = package_info.version;
     var parse = exports.parse = function(userAgent) {
       return fillResult(execParse(userAgent));
     };
