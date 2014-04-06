@@ -61,23 +61,23 @@
           <table>
             <tr><th>lang</th><th>name</th><th>category</th><th>os</th><th>version</th><th>vendor</th></tr>
             <tr id="js">
-              <th>javascript</th>
+              <th class="lib">js</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="ruby">
-              <th>ruby</th>
+              <th class="lib">ruby</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="jruby">
-              <th>java</th>
+              <th class="lib">java</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="perl">
-              <th>perl</th>
+              <th class="lib">perl</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="node">
-              <th>node</th>
+              <th class="lib">node</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
           </table>
@@ -115,13 +115,25 @@
       updateRow('#js', r);
     }
     function updateLang(useragent, lang){
-      var url = "http://woothee-" + lang + ".tagomor.is/parse";
-      $.getJSON(url, {ua: useragent}, function(data){
+      var url = "http://woothee-" + lang + ".tagomor.is";
+      $.getJSON(url + "/api", {ua: useragent}, function(data){
         var updated = $('tr#' + lang);
+        var lang = updated.find('th.lib');
+        lang.text( lang.text() + "(" + data.version + ")" );
         ['name','category','os','version','vendor'].forEach(function(field){
-          updated.find('td.' + field).text(data[field]);
+          updated.find('td.' + field).text(data.result[field]);
         });
-      });
+      })
+        .fail(function() {
+          $.getJSON(url + "/parse", {ua: useragent}, function(data){
+            var updated = $('tr#' + lang);
+            var lang = updated.find('th.lib');
+            lang.text( lang.text() + "(unknown)" );
+            ['name','category','os','version','vendor'].forEach(function(field){
+              updated.find('td.' + field).text(data[field]);
+            });
+          });
+        })
     }
     $(function(){
       $('#useragent').val(navigator.userAgent);
