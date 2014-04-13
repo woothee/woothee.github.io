@@ -81,6 +81,10 @@
               <th class="lib" data-lang="node">node</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
+            <tr id="python">
+              <th class="lib" data-lang="python">python</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
           </table>
         </div>
 
@@ -106,6 +110,7 @@
       updateLang(useragent, 'jruby');
       updateLang(useragent, 'perl');
       updateLang(useragent, 'node');
+      updateAppEngineLang(useragent, 'python');
     }
     function updateRow(id, r, v){
       var row = $(id);
@@ -119,8 +124,7 @@
       var r = woothee.parse(useragent);
       updateRow('tr#js', r, woothee.VERSION);
     }
-    function updateLang(useragent, lang){
-      var url = "http://woothee-" + lang + ".tagomor.is";
+    function fetch(useragent, url, lang){
       $.getJSON(url + "/api", {ua: useragent}, function(data){
         updateRow('tr#' + lang, data.result, data.version);
       })
@@ -129,6 +133,14 @@
             updateRow('tr#' + lang, data);
           });
         })
+    }
+    function updateLang(useragent, lang){
+      var url = "http://woothee-" + lang + ".tagomor.is";
+      fetch(useragent, url, lang);
+    }
+    function updateAppEngineLang(useragent, lang){
+      var url = "http://" + lang + ".woothee-demo.appspot.com";
+      fetch(useragent, url, lang);
     }
     $(function(){
       $('#useragent').val(navigator.userAgent);
