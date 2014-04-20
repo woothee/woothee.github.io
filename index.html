@@ -65,12 +65,16 @@
               <th class="lib" data-lang="js">js</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
+            <tr id="java">
+              <th class="lib" data-lang="java">java</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
             <tr id="ruby">
               <th class="lib" data-lang="ruby">ruby</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="jruby">
-              <th class="lib" data-lang="java">java</th>
+              <th class="lib" data-lang="jruby">jruby:java</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
             <tr id="perl">
@@ -114,6 +118,7 @@
     <script>
     function update(useragent){
       updateJavascript(useragent);
+      updateAppEngineLang(useragent, 'java');
       updateLang(useragent, 'ruby');
       updateLang(useragent, 'jruby');
       updateLang(useragent, 'perl');
