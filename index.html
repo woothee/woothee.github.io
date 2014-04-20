@@ -85,6 +85,10 @@
               <th class="lib" data-lang="python">python</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
+            <tr id="php">
+              <th class="lib" data-lang="php">php</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
           </table>
         </div>
 
@@ -111,6 +115,7 @@
       updateLang(useragent, 'perl');
       updateLang(useragent, 'node');
       updateAppEngineLang(useragent, 'python');
+      updateAppEngineLang(useragent, 'php');
     }
     function updateRow(id, r, v){
       var row = $(id);
