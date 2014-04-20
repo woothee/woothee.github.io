@@ -89,6 +89,10 @@
               <th class="lib" data-lang="php">php</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
             </tr>
+            <tr id="go">
+              <th class="lib" data-lang="go">go</th>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+            </tr>
           </table>
         </div>
 
@@ -116,6 +120,7 @@
       updateLang(useragent, 'node');
       updateAppEngineLang(useragent, 'python');
       updateAppEngineLang(useragent, 'php');
+      updateAppEngineLang(useragent, 'go');
     }
     function updateRow(id, r, v){
       var row = $(id);
