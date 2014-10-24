@@ -2,10 +2,10 @@
   var root = this;
   // embed: dataset, util, browser, mobilephone, crawler, appliance, misc, woothee
 
-  // GENERATED from dataset.yaml at Fri Apr 25 13:06:56 JST 2014 by tagomoris
+  // GENERATED from dataset.yaml at Fri Oct 24 17:03:07 JST 2014 by tagomoris
 
   // Snapshot from package.json
-  var package_info = {"name":"woothee","version":"0.4.1","description":"User-Agent string parser (js implementation)","main":"./release/woothee","devDependencies":{"mocha":">= 1.7.0","chai":">= 1.3.0","js-yaml":">= 1.0.3","should":"~1.2.2"},"scripts":{"test":"make test"},"repository":{"type":"git","url":"https://github.com/woothee/woothee-js"},"author":"tagomoris","license":"Apache v2"};
+  var package_info = {"name":"woothee","version":"1.0.1","description":"User-Agent string parser (js implementation)","main":"./release/woothee","devDependencies":{"mocha":">= 1.7.0","chai":">= 1.3.0","js-yaml":">= 1.0.3","should":"~1.2.2"},"scripts":{"test":"make test"},"repository":{"type":"git","url":"https://github.com/woothee/woothee-js"},"author":"tagomoris","license":"Apache v2"};
 
   var dataset = {};
   (function(){
@@ -16,6 +16,7 @@
         KEY_TYPE = exports.KEY_TYPE = 'type',
         KEY_CATEGORY = exports.KEY_CATEGORY = 'category',
         KEY_OS = exports.KEY_OS = 'os',
+        KEY_OS_VERSION = exports.KEY_OS_VERSION = 'os_version',
         KEY_VENDOR = exports.KEY_VENDOR = 'vendor',
         KEY_VERSION = exports.KEY_VERSION = 'version';
     var TYPE_BROWSER = 'browser',
@@ -30,6 +31,7 @@
     var ATTRIBUTE_NAME = exports.ATTRIBUTE_NAME = 'name',
         ATTRIBUTE_CATEGORY = exports.ATTRIBUTE_CATEGORY = 'category',
         ATTRIBUTE_OS = exports.ATTRIBUTE_OS = 'os',
+        ATTRIBUTE_OS_VERSION = exports.ATTRIBUTE_OS_VERSION = 'os_version',
         ATTRIBUTE_VENDOR = exports.ATTRIBUTE_VENDOR = 'vendor',
         ATTRIBUTE_VERSION = exports.ATTRIBUTE_VERSION = 'version';
     var VALUE_UNKNOWN = exports.VALUE_UNKNOWN = 'UNKNOWN';
@@ -37,9 +39,9 @@
       CATEGORY_PC, CATEGORY_SMARTPHONE, CATEGORY_MOBILEPHONE,
       CATEGORY_CRAWLER, CATEGORY_APPLIANCE, CATEGORY_MISC, VALUE_UNKNOWN
     ];
-    var ATTRIBUTE_LIST = exports.ATTRIBUTE_LIST = [ATTRIBUTE_NAME, ATTRIBUTE_CATEGORY, ATTRIBUTE_OS, ATTRIBUTE_VENDOR, ATTRIBUTE_VERSION];
+    var ATTRIBUTE_LIST = exports.ATTRIBUTE_LIST = [ATTRIBUTE_NAME, ATTRIBUTE_CATEGORY, ATTRIBUTE_OS, ATTRIBUTE_VENDOR, ATTRIBUTE_VERSION, ATTRIBUTE_OS_VERSION];
     var DATASET = {};
-    // GENERATED from dataset.yaml at Fri Apr 25 13:06:56 JST 2014 by tagomoris
+    // GENERATED from dataset.yaml at Fri Oct 24 17:03:06 JST 2014 by tagomoris
     var obj;
     obj = {label:'MSIE', name:'Internet Explorer', type:'browser'};
     obj['vendor'] = 'Microsoft';
@@ -383,6 +385,9 @@
     var updateOs = exports.updateOs = function(target, os) {
       target[dataset.ATTRIBUTE_OS] = os;
     };
+    var updateOsVersion = exports.updateOsVersion = function(target, version) {
+      target[dataset.ATTRIBUTE_OS_VERSION] = version;
+    };
 
   })();
   var browser = {};
@@ -390,13 +395,14 @@
     var exports = browser;
     /* CODE: browser.js */
     var msiePattern = /MSIE ([.0-9]+);/;
-    var tridentPattern = /Trident\/[.0-9]+; rv:([.0-9]+)/;
+    var tridentPattern = /Trident\/[.0-9]+;(?: BOIE[0-9]+;[A-Z]+;)? rv:([.0-9]+)/;
+    var iemobilePattern = /IEMobile\/([.0-9]+);/;
     var challengeMSIE = exports.challengeMSIE = function(ua, result) {
-      if (ua.indexOf('compatible; MSIE') < 0 && ua.indexOf('Trident/') < 0)
+      if (ua.indexOf('compatible; MSIE') < 0 && ua.indexOf('Trident/') < 0 && ua.indexOf('IEMobile/'))
         return false;
       var version;
       var match;
-      if ((match = msiePattern.exec(ua)) || (match = tridentPattern.exec(ua)))
+      if ( (match = msiePattern.exec(ua)) || (match = tridentPattern.exec(ua)) || (match = iemobilePattern.exec(ua)))
         version = match[1];
       else
         version = dataset.VALUE_UNKNOWN;
@@ -490,7 +496,7 @@
     var exports = os;
     /* CODE: os.js */
     var windowsPattern = /Windows ([ .a-zA-Z0-9]+)[;\\)]/;
-    var windowsPhonePattern = /^Phone OS/;
+    var windowsPhonePattern = /^Phone(?: OS)? ([.0-9]+)/;
     var challengeWindows = exports.challengeWindows = function(ua, result) {
       if (ua.indexOf('Windows') < 0)
         return false;
@@ -519,7 +525,10 @@
       else if (version === 'NT 6.1') data = dataset.get('Win7');
       else if (version === 'NT 6.0') data = dataset.get('WinVista');
       else if (version === 'NT 5.1') data = dataset.get('WinXP');
-      else if (windowsPhonePattern.exec(version)) data = dataset.get('WinPhone');
+      else if ((match = windowsPhonePattern.exec(version))) {
+        data = dataset.get('WinPhone');
+        version = match[1];
+      }
       else if (version === 'NT 5.0') data = dataset.get('Win2000');
       else if (version === 'NT 4.0') data = dataset.get('WinNT4');
       else if (version === '98') data = dataset.get('Win98'); // wow, WinMe is shown as 'Windows 98; Win9x 4.90', fxxxk
@@ -531,51 +540,79 @@
        */
       updateCategory(result, data[dataset.KEY_CATEGORY]);
       updateOs(result, data[dataset.KEY_NAME]);
+      updateOsVersion(result, version);
       return true;
     };
     var challengeOSX = exports.challengeOSX = function(ua, result) {
       if (ua.indexOf('Mac OS X') < 0)
         return false;
       var data = dataset.get('OSX');
+      var version;
+      var match;
       if (ua.indexOf('like Mac OS X') >= 0) {
         if (ua.indexOf('iPhone;') >= 0) data = dataset.get('iPhone');
         else if (ua.indexOf('iPad;') >= 0) data = dataset.get('iPad');
         else if (ua.indexOf('iPod') >= 0) data = dataset.get('iPod');
+        if ((match = /; CPU(?: iPhone)? OS (\d+_\d+(?:_\d+)?) like Mac OS X/.exec(ua)))
+          version = match[1].replace(/_/g, '.');
+      }
+      else {
+        if ((match = /Mac OS X (10[._]\d+(?:[._]\d+)?)(?:\)|;)/.exec(ua))) {
+          version = match[1].replace(/_/g, '.');
+        }
       }
       updateCategory(result, data[dataset.KEY_CATEGORY]);
       updateOs(result, data[dataset.KEY_NAME]);
+      if (version)
+        updateOsVersion(result, version);
       return true;
     };
     var challengeLinux = exports.challengeLinux = function(ua, result) {
       if (ua.indexOf('Linux') < 0)
         return false;
       var data = dataset.get('Linux');
-      if (ua.indexOf('Android') >= 0)
+      var os_version;
+      var match;
+      if (ua.indexOf('Android') >= 0) {
         data = dataset.get('Android');
+        if ((match = /Android[- ](\d+\.\d+(?:\.\d+)?)/.exec(ua)))
+          os_version = match[1];
+      }
       updateCategory(result, data[dataset.KEY_CATEGORY]);
       updateOs(result, data[dataset.KEY_NAME]);
+      if (os_version)
+        updateOsVersion(result, os_version);
       return true;
     };
     var challengeSmartPhone = exports.challengeSmartPhone = function(ua, result) {
       var data = null;
+      var os_version = null;
+      var match;
       if (ua.indexOf('iPhone') >= 0) data = dataset.get('iPhone');
       else if (ua.indexOf('iPad') >= 0) data = dataset.get('iPad');
       else if (ua.indexOf('iPod') >= 0) data = dataset.get('iPod');
       else if (ua.indexOf('Android') >= 0) data = dataset.get('Android');
       else if (ua.indexOf('CFNetwork') >= 0) data = dataset.get('iOS');
-      else if (ua.indexOf('BlackBerry') >= 0) data = dataset.get('BlackBerry');
+      else if (ua.indexOf('BlackBerry') >= 0) {
+        data = dataset.get('BlackBerry');
+        if ((match = /BlackBerry(?:\d+)\/([.0-9]+) /.exec(ua)))
+          os_version = match[1];
+      }
       if (result[dataset.KEY_NAME] && result[dataset.KEY_NAME] === dataset.get('Firefox')[dataset.KEY_NAME]) {
         // Firefox OS specific pattern
         // http://lawrencemandel.com/2012/07/27/decision-made-firefox-os-user-agent-string/
         // https://github.com/woothee/woothee/issues/2
-        if (/^Mozilla\/[.0-9]+ \((Mobile|Tablet);(.*;)? rv:[.0-9]+\) Gecko\/[.0-9]+ Firefox\/[.0-9]+$/.exec(ua)) {
+        if ((match = /^Mozilla\/[.0-9]+ \((?:Mobile|Tablet);(?:.*;)? rv:([.0-9]+)\) Gecko\/[.0-9]+ Firefox\/[.0-9]+$/.exec(ua))) {
           data = dataset.get('FirefoxOS');
+          os_version = match[1];
         }
       }
       if (!data)
         return false;
       updateCategory(result, data[dataset.KEY_CATEGORY]);
       updateOs(result, data[dataset.KEY_NAME]);
+      if (os_version)
+        updateOsVersion(result, os_version);
       return true;
     };
     var challengeMobilePhone = exports.challengeMobilePhone = function(ua, result) {
@@ -636,14 +673,32 @@
     };
     var challengeMisc = exports.challengeMisc = function(ua, result) {
       var data;
-      if (ua.indexOf('(Win98;') >= 0) data = dataset.get('Win98');
-      else if (ua.indexOf('Macintosh; U; PPC;') >= 0) data = dataset.get('MacOS');
+      var osVersion;
+      var match;
+      if (ua.indexOf('(Win98;') >= 0) {
+        data = dataset.get('Win98');
+        osVersion = "98";
+      } else if (ua.indexOf('Macintosh; U; PPC;') >= 0) {
+        data = dataset.get('MacOS');
+        if ((match = /rv:(\d+\.\d+\.\d+)/.exec(ua)))
+          osVersion = match[1];
+      }
       else if (ua.indexOf('Mac_PowerPC') >= 0) data = dataset.get('MacOS');
-      else if (ua.indexOf('X11; FreeBSD ') >= 0) data = dataset.get('BSD');
-      else if (ua.indexOf('X11; CrOS ') >= 0) data = dataset.get('ChromeOS');
+      else if (ua.indexOf('X11; FreeBSD ') >= 0) {
+        data = dataset.get('BSD');
+        if ((match = /FreeBSD ([^;\)]+);/.exec(ua)))
+          osVersion = match[1];
+      }
+      else if (ua.indexOf('X11; CrOS ') >= 0) {
+        data = dataset.get('ChromeOS');
+        if ((match = /CrOS ([^\)]+)\)/.exec(ua)))
+          osVersion = match[1];
+      }
       if (data) {
         updateCategory(result, data[dataset.KEY_CATEGORY]);
         updateOs(result, data[dataset.KEY_NAME]);
+        if (osVersion)
+          updateOsVersion(result, osVersion);
         return true;
       }
       return false;
@@ -794,6 +849,11 @@
           updateMap(result, dataset.get('YahooJP'));
           return true;
         }
+        if (ua.indexOf('Y!J-BRZ/YATSHA crawler') >= 0
+            || ua.indexOf('Y!J-BRY/YATSH crawler') >= 0) {
+          updateMap(result, dataset.get('YahooJP'));
+          return true;
+        }
         if (ua.indexOf('Yahoo Pipes') >= 0) {
           updateMap(result, dataset.get('YahooPipes'));
           return true;
@@ -920,13 +980,30 @@
     /* CODE: appliance.js */
     var challengePlaystation = exports.challengePlaystation = function(ua, result) {
       var data = null;
-      if (ua.indexOf('PSP (PlayStation Portable);') >= 0) data = dataset.get('PSP');
-      else if (ua.indexOf('PlayStation Vita') >= 0) data = dataset.get('PSVita');
-      else if (ua.indexOf('PLAYSTATION 3 ') >= 0 || ua.indexOf('PLAYSTATION 3;') >= 0) data = dataset.get('PS3');
-      else if (ua.indexOf('PlayStation 4 ') >= 0) data = dataset.get('PS4');
+      var os_version = null;
+      var match;
+      if (ua.indexOf('PSP (PlayStation Portable);') >= 0) {
+        data = dataset.get('PSP');
+        if ((match = /PSP \(PlayStation Portable\); ([.0-9]+)\)/.exec(ua)))
+          os_version = match[1];
+      } else if (ua.indexOf('PlayStation Vita') >= 0) {
+        data = dataset.get('PSVita');
+        if ((match = /PlayStation Vita ([.0-9]+)\)/.exec(ua)))
+          os_version = match[1];
+      } else if (ua.indexOf('PLAYSTATION 3 ') >= 0 || ua.indexOf('PLAYSTATION 3;') >= 0) {
+        data = dataset.get('PS3');
+        if ((match = /PLAYSTATION 3;? ([.0-9]+)\)/.exec(ua)))
+          os_version = match[1];
+      } else if (ua.indexOf('PlayStation 4 ') >= 0) {
+        data = dataset.get('PS4');
+        if ((match = /PlayStation 4 ([.0-9]+)\)/.exec(ua)))
+          os_version = match[1];
+      }
       if (! data)
         return false;
       updateMap(result, data);
+      if (os_version)
+        updateOsVersion(result, os_version);
       return true;
     };
     var challengeNintendo = exports.challengeNintendo = function(ua, result) {
@@ -1135,6 +1212,7 @@
     filled[dataset.ATTRIBUTE_NAME] = dataset.VALUE_UNKNOWN;
     filled[dataset.ATTRIBUTE_CATEGORY] = dataset.VALUE_UNKNOWN;
     filled[dataset.ATTRIBUTE_OS] = dataset.VALUE_UNKNOWN;
+    filled[dataset.ATTRIBUTE_OS_VERSION] = dataset.VALUE_UNKNOWN;
     filled[dataset.ATTRIBUTE_VERSION] = dataset.VALUE_UNKNOWN;
     filled[dataset.ATTRIBUTE_VENDOR] = dataset.VALUE_UNKNOWN;
     function fillResult(result) {
@@ -1155,6 +1233,7 @@
   var updateMap = util.updateMap,
       updateCategory = util.updateCategory,
       updateOs = util.updateOs,
+      updateOsVersion = util.updateOsVersion,
       updateVersion = util.updateVersion;
 
   // AMD / RequireJS

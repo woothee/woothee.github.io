@@ -25,7 +25,7 @@
 
         User-agent string parser for many languages, which does:
         <ul>
-          <li>parse user-agent strings and returns name/category/version/os/vendor</li>
+          <li>parse user-agent strings and returns name/category/version/os/os_version/vendor</li>
           <li>works reasonably fast</li>
           <li>returns just same results between language implementations</li>
           <li>share a test case between language implementations</li>
@@ -60,42 +60,42 @@
         <div>
           <h4>Parse result:</h4>
           <table>
-            <tr><th>lang</th><th>name</th><th>category</th><th>os</th><th>version</th><th>vendor</th></tr>
+            <tr><th>lang</th><th>name</th><th>category</th><th>os</th><th>version</th><th>os_version</th><th>vendor</th></tr>
             <tr id="js">
               <th class="lib" data-lang="js">js</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
             <tr id="java">
               <th class="lib" data-lang="java">java</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
             <tr id="ruby">
               <th class="lib" data-lang="ruby">ruby</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
             <tr id="jruby">
               <th class="lib" data-lang="jruby">jruby:java</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
             <tr id="perl">
               <th class="lib" data-lang="perl">perl</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
             <tr id="node">
               <th class="lib" data-lang="node">node</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
             <tr id="python">
               <th class="lib" data-lang="python">python</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
             <tr id="php">
               <th class="lib" data-lang="php">php</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
             <tr id="go">
               <th class="lib" data-lang="go">go</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="vendor"></td>
+              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
           </table>
         </div>
@@ -129,7 +129,7 @@
     }
     function updateRow(id, r, v){
       var row = $(id);
-      ['name','category','os','version','vendor'].forEach(function(attr){ row.find('.' + attr).text(r[attr]); });
+      ['name','category','os','version','os_version','vendor'].forEach(function(attr){ row.find('.' + attr).text(r[attr]); });
       var version = '?.?.?';
       if (v)
         version = v;
