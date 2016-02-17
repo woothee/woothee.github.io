@@ -2,10 +2,10 @@
   var root = this;
   // embed: dataset, util, browser, mobilephone, crawler, appliance, misc, woothee
 
-  // GENERATED from dataset.yaml at Fri Oct 24 17:03:07 JST 2014 by tagomoris
+  // GENERATED from dataset.yaml at Tue Dec 22 13:57:12 JST 2015 by tagomoris
 
   // Snapshot from package.json
-  var package_info = {"name":"woothee","version":"1.0.1","description":"User-Agent string parser (js implementation)","main":"./release/woothee","devDependencies":{"mocha":">= 1.7.0","chai":">= 1.3.0","js-yaml":">= 1.0.3","should":"~1.2.2"},"scripts":{"test":"make test"},"repository":{"type":"git","url":"https://github.com/woothee/woothee-js"},"author":"tagomoris","license":"Apache v2"};
+  var package_info = {"name":"woothee","version":"1.3.0","description":"User-Agent string parser (js implementation)","main":"./release/woothee","devDependencies":{"mocha":">= 1.7.0","chai":">= 1.3.0","js-yaml":">= 1.0.3","should":"~1.2.2"},"scripts":{"test":"make test"},"repository":{"type":"git","url":"https://github.com/woothee/woothee-js"},"author":"tagomoris","license":"Apache v2"};
 
   var dataset = {};
   (function(){
@@ -41,9 +41,12 @@
     ];
     var ATTRIBUTE_LIST = exports.ATTRIBUTE_LIST = [ATTRIBUTE_NAME, ATTRIBUTE_CATEGORY, ATTRIBUTE_OS, ATTRIBUTE_VENDOR, ATTRIBUTE_VERSION, ATTRIBUTE_OS_VERSION];
     var DATASET = {};
-    // GENERATED from dataset.yaml at Fri Oct 24 17:03:06 JST 2014 by tagomoris
+    // GENERATED from dataset.yaml at Tue Dec 22 13:57:12 JST 2015 by tagomoris
     var obj;
     obj = {label:'MSIE', name:'Internet Explorer', type:'browser'};
+    obj['vendor'] = 'Microsoft';
+    DATASET[obj.label] = obj;
+    obj = {label:'Edge', name:'Edge', type:'browser'};
     obj['vendor'] = 'Microsoft';
     DATASET[obj.label] = obj;
     obj = {label:'Chrome', name:'Chrome', type:'browser'};
@@ -61,7 +64,13 @@
     obj = {label:'Sleipnir', name:'Sleipnir', type:'browser'};
     obj['vendor'] = 'Fenrir Inc.';
     DATASET[obj.label] = obj;
+    obj = {label:'Webview', name:'Webview', type:'browser'};
+    obj['vendor'] = 'OS vendor';
+    DATASET[obj.label] = obj;
     obj = {label:'Win', name:'Windows UNKNOWN Ver', type:'os'};
+    obj['category'] = 'pc';
+    DATASET[obj.label] = obj;
+    obj = {label:'Win10', name:'Windows 10', type:'os'};
     obj['category'] = 'pc';
     DATASET[obj.label] = obj;
     obj = {label:'Win8.1', name:'Windows 8.1', type:'os'};
@@ -134,6 +143,9 @@
     obj['category'] = 'smartphone';
     DATASET[obj.label] = obj;
     obj = {label:'BlackBerry', name:'BlackBerry', type:'os'};
+    obj['category'] = 'smartphone';
+    DATASET[obj.label] = obj;
+    obj = {label:'BlackBerry10', name:'BlackBerry 10', type:'os'};
     obj['category'] = 'smartphone';
     DATASET[obj.label] = obj;
     obj = {label:'docomo', name:'docomo', type:'full'};
@@ -311,6 +323,10 @@
     obj['vendor'] = '';
     obj['category'] = 'crawler';
     DATASET[obj.label] = obj;
+    obj = {label:'twitter', name:'twitter', type:'full'};
+    obj['vendor'] = '';
+    obj['category'] = 'crawler';
+    DATASET[obj.label] = obj;
     obj = {label:'mixi', name:'mixi', type:'full'};
     obj['vendor'] = '';
     obj['category'] = 'crawler';
@@ -395,14 +411,20 @@
     var exports = browser;
     /* CODE: browser.js */
     var msiePattern = /MSIE ([.0-9]+);/;
-    var tridentPattern = /Trident\/[.0-9]+;(?: BOIE[0-9]+;[A-Z]+;)? rv:([.0-9]+)/;
+    var tridentPattern = /Trident\/[.0-9]+;/;
+    var tridentVersionPattern = / rv:([.0-9]+)/;
     var iemobilePattern = /IEMobile\/([.0-9]+);/;
     var challengeMSIE = exports.challengeMSIE = function(ua, result) {
       if (ua.indexOf('compatible; MSIE') < 0 && ua.indexOf('Trident/') < 0 && ua.indexOf('IEMobile/'))
         return false;
       var version;
-      var match;
-      if ( (match = msiePattern.exec(ua)) || (match = tridentPattern.exec(ua)) || (match = iemobilePattern.exec(ua)))
+      var match = msiePattern.exec(ua);
+      if (!match)
+        if (tridentPattern.exec(ua))
+          match = tridentVersionPattern.exec(ua);
+      if (!match)
+        match = iemobilePattern.exec(ua);
+      if (match)
         version = match[1];
       else
         version = dataset.VALUE_UNKNOWN;
@@ -410,6 +432,8 @@
       updateVersion(result, version);
       return true;
     };
+    var edgePattern = /Edge\/([.0-9]+)/;
+    var firefoxiOSPattern = /FxiOS\/([.0-9]+)/;
     var chromePattern = /(?:Chrome|CrMo|CriOS)\/([.0-9]+)/;
     var operaBlinkPattern = /OPR\/([.0-9]+)/;
     var safariPattern = /Version\/([.0-9]+)/;
@@ -418,6 +442,18 @@
         return false;
       var version = dataset.VALUE_UNKNOWN;
       var match;
+      if ((match = edgePattern.exec(ua))) {
+        version = match[1];
+        updateMap(result, dataset.get('Edge'));
+        updateVersion(result, version);
+        return true;
+      }
+      if ((match = firefoxiOSPattern.exec(ua))) {
+        version = match[1];
+        updateMap(result, dataset.get('Firefox'));
+        updateVersion(result, version);
+        return true;
+      }
       if ((match = chromePattern.exec(ua))) {
         var matchOpera;
         if ((matchOpera = operaBlinkPattern.exec(ua))) {
@@ -470,6 +506,23 @@
       updateVersion(result, version);
       return true;
     };
+    var webviewPattern = /iP(hone;|ad;|od) .*like Mac OS X/;
+    var webviewVersionPattern = /Version\/([.0-9]+)/;
+    var challengeWebview = exports.challengeWebview = function(ua, result) {
+      var version = dataset.VALUE_UNKNOWN;
+      var match = webviewPattern.exec(ua);
+      if (match) {
+        if (ua.indexOf('Safari/') > -1)
+          return false;
+        var vmatch = webviewVersionPattern.exec(ua);
+        if (vmatch)
+          version = vmatch[1];
+        updateMap(result, dataset.get('Webview'));
+        updateVersion(result, version);
+        return true;
+      }
+      return false;
+    };
     var sleipnirPattern = /Sleipnir\/([.0-9]+)/;
     var challengeSleipnir = exports.challengeSleipnir = function(ua, result) {
       if (ua.indexOf('Sleipnir/') < 0)
@@ -520,7 +573,8 @@
         return true;
       }
       var version = match[1];
-      if (version === 'NT 6.3') data = dataset.get('Win8.1'); 
+      if (version === 'NT 10.0') data = dataset.get('Win10'); 
+      else if (version === 'NT 6.3') data = dataset.get('Win8.1'); 
       else if (version === 'NT 6.2') data = dataset.get('Win8'); // "NT 6.2; ARM;" means Windows RT, oh....
       else if (version === 'NT 6.1') data = dataset.get('Win7');
       else if (version === 'NT 6.0') data = dataset.get('WinVista');
@@ -593,6 +647,11 @@
       else if (ua.indexOf('iPod') >= 0) data = dataset.get('iPod');
       else if (ua.indexOf('Android') >= 0) data = dataset.get('Android');
       else if (ua.indexOf('CFNetwork') >= 0) data = dataset.get('iOS');
+      else if (ua.indexOf('BB10') >= 0) {
+        data = dataset.get('BlackBerry10');
+        if ((match = /BB10(?:.+)Version\/([.0-9]+)/.exec(ua)))
+          os_version = match[1];
+      }
       else if (ua.indexOf('BlackBerry') >= 0) {
         data = dataset.get('BlackBerry');
         if ((match = /BlackBerry(?:\d+)\/([.0-9]+) /.exec(ua)))
@@ -891,6 +950,10 @@
         updateMap(result, dataset.get('facebook'));
         return true;
       }
+      if (ua.indexOf('Twitterbot/') >= 0) {
+        updateMap(result, dataset.get('twitter'));
+        return true;
+      }
       if (ua.indexOf('ichiro') >= 0) {
         if (ua.indexOf('http://help.goo.ne.jp/door/crawler.html') >= 0 ||
             ua.indexOf('compatible; ichiro/mobile goo;') >= 0) {
@@ -1105,7 +1168,7 @@
     };
     function execParse(userAgent) {
       var result = {};
-      if (userAgent.length < 1 || userAgent === '-')
+      if (! userAgent || userAgent === '-')
         return result;
       if (tryCrawler(userAgent, result))
         return result;
@@ -1143,6 +1206,8 @@
       if (browser.challengeFirefox(userAgent, result))
         return true;
       if (browser.challengeOpera(userAgent, result))
+        return true;
+      if (browser.challengeWebview(userAgent, result))
         return true;
       return false;
     }
@@ -1222,6 +1287,8 @@
         result[dataset.ATTRIBUTE_CATEGORY] = dataset.VALUE_UNKNOWN;
       if (! result[dataset.ATTRIBUTE_OS])
         result[dataset.ATTRIBUTE_OS] = dataset.VALUE_UNKNOWN;
+      if (! result[dataset.ATTRIBUTE_OS_VERSION])
+        result[dataset.ATTRIBUTE_OS_VERSION] = dataset.VALUE_UNKNOWN;
       if (! result[dataset.ATTRIBUTE_VERSION])
         result[dataset.ATTRIBUTE_VERSION] = dataset.VALUE_UNKNOWN;
       if (! result[dataset.ATTRIBUTE_VENDOR])
