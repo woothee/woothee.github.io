@@ -2,10 +2,10 @@
   var root = this;
   // embed: dataset, util, browser, mobilephone, crawler, appliance, misc, woothee
 
-  // GENERATED from dataset.yaml at Tue Dec 22 13:57:12 JST 2015 by tagomoris
+  // GENERATED from dataset.yaml at Wed Feb 20 16:59:53 JST 2019 by tagomoris
 
   // Snapshot from package.json
-  var package_info = {"name":"woothee","version":"1.3.0","description":"User-Agent string parser (js implementation)","main":"./release/woothee","devDependencies":{"mocha":">= 1.7.0","chai":">= 1.3.0","js-yaml":">= 1.0.3","should":"~1.2.2"},"scripts":{"test":"make test"},"repository":{"type":"git","url":"https://github.com/woothee/woothee-js"},"author":"tagomoris","license":"Apache v2"};
+  var package_info = {"name":"woothee","version":"1.8.0","description":"User-Agent string parser (js implementation)","main":"./release/woothee","devDependencies":{"chai":">= 1.3.0","js-yaml":">= 1.0.3","mocha":"^6.0.0","should":"~1.2.2"},"scripts":{"test":"make test"},"repository":{"type":"git","url":"https://github.com/woothee/woothee-js"},"author":"tagomoris","license":"Apache v2"};
 
   var dataset = {};
   (function(){
@@ -41,7 +41,7 @@
     ];
     var ATTRIBUTE_LIST = exports.ATTRIBUTE_LIST = [ATTRIBUTE_NAME, ATTRIBUTE_CATEGORY, ATTRIBUTE_OS, ATTRIBUTE_VENDOR, ATTRIBUTE_VERSION, ATTRIBUTE_OS_VERSION];
     var DATASET = {};
-    // GENERATED from dataset.yaml at Tue Dec 22 13:57:12 JST 2015 by tagomoris
+    // GENERATED from dataset.yaml at Wed Feb 20 16:59:52 JST 2019 by tagomoris
     var obj;
     obj = {label:'MSIE', name:'Internet Explorer', type:'browser'};
     obj['vendor'] = 'Microsoft';
@@ -61,11 +61,17 @@
     obj = {label:'Opera', name:'Opera', type:'browser'};
     obj['vendor'] = 'Opera';
     DATASET[obj.label] = obj;
+    obj = {label:'Vivaldi', name:'Vivaldi', type:'browser'};
+    obj['vendor'] = 'Vivaldi Technologies';
+    DATASET[obj.label] = obj;
     obj = {label:'Sleipnir', name:'Sleipnir', type:'browser'};
     obj['vendor'] = 'Fenrir Inc.';
     DATASET[obj.label] = obj;
     obj = {label:'Webview', name:'Webview', type:'browser'};
     obj['vendor'] = 'OS vendor';
+    DATASET[obj.label] = obj;
+    obj = {label:'YaBrowser', name:'Yandex Browser', type:'browser'};
+    obj['vendor'] = 'Yandex';
     DATASET[obj.label] = obj;
     obj = {label:'Win', name:'Windows UNKNOWN Ver', type:'os'};
     obj['category'] = 'pc';
@@ -311,6 +317,10 @@
     obj['vendor'] = '';
     obj['category'] = 'crawler';
     DATASET[obj.label] = obj;
+    obj = {label:'BingPreview', name:'BingPreview', type:'full'};
+    obj['vendor'] = '';
+    obj['category'] = 'crawler';
+    DATASET[obj.label] = obj;
     obj = {label:'Yeti', name:'Naver Yeti', type:'full'};
     obj['vendor'] = '';
     obj['category'] = 'crawler';
@@ -324,6 +334,10 @@
     obj['category'] = 'crawler';
     DATASET[obj.label] = obj;
     obj = {label:'twitter', name:'twitter', type:'full'};
+    obj['vendor'] = '';
+    obj['category'] = 'crawler';
+    DATASET[obj.label] = obj;
+    obj = {label:'trendictionbot', name:'trendiction', type:'full'};
     obj['vendor'] = '';
     obj['category'] = 'crawler';
     DATASET[obj.label] = obj;
@@ -432,6 +446,21 @@
       updateVersion(result, version);
       return true;
     };
+    var yandexBrowserPattern = /YaBrowser\/([.0-9]+)/;
+    var challengeYandexBrowser = exports.challengeYandexBrowser = function(ua, result) {
+      if (ua.indexOf('YaBrowser/') < 0)
+        return false;
+      var version;
+      var match = yandexBrowserPattern.exec(ua);
+      if (match) {
+        version = match[1];
+      } else {
+        version = dataset.VALUE_UNKNOWN;
+      }
+      updateMap(result, dataset.get('YaBrowser'));
+      updateVersion(result, version);
+      return true;
+    };
     var edgePattern = /Edge\/([.0-9]+)/;
     var firefoxiOSPattern = /FxiOS\/([.0-9]+)/;
     var chromePattern = /(?:Chrome|CrMo|CriOS)\/([.0-9]+)/;
@@ -439,6 +468,8 @@
     var safariPattern = /Version\/([.0-9]+)/;
     var challengeSafariChrome = exports.challengeSafariChrome = function(ua, result) {
       if (ua.indexOf('Safari/') < 0)
+        return false;
+      if (ua.indexOf('Chrome') >= 0 && ua.indexOf('wv') >= 0)
         return false;
       var version = dataset.VALUE_UNKNOWN;
       var match;
@@ -510,6 +541,16 @@
     var webviewVersionPattern = /Version\/([.0-9]+)/;
     var challengeWebview = exports.challengeWebview = function(ua, result) {
       var version = dataset.VALUE_UNKNOWN;
+      // Android(Lollipop and Above)
+      if (ua.indexOf('Chrome') >= 0 && ua.indexOf('wv') >= 0) {
+        var vmatch = webviewVersionPattern.exec(ua);
+        if (vmatch)
+           version = vmatch[1];
+        updateMap(result, dataset.get('Webview'));
+        updateVersion(result, version);
+        return true;
+      }
+      // iOS
       var match = webviewPattern.exec(ua);
       if (match) {
         if (ua.indexOf('Safari/') > -1)
@@ -540,6 +581,18 @@
       var win = dataset.get('Win');
       updateCategory(result, win[dataset.KEY_CATEGORY]);
       updateOs(result, win[dataset.KEY_NAME]);
+      return true;
+    };
+    var vivaldiPattern = /Vivaldi\/([.0-9]+)/;
+    var challengeVivaldi = exports.challengeVivaldi = function(ua, result) {
+      if (ua.indexOf('Vivaldi/') < 0)
+        return false;
+      var version = dataset.VALUE_UNKNOWN;
+      var match = vivaldiPattern.exec(ua);
+      if (match)
+        version = match[1];
+      updateMap(result, dataset.get('Vivaldi'));
+      updateVersion(result, version);
       return true;
     };
 
@@ -928,6 +981,10 @@
           return true;
         }
       }
+      if (ua.indexOf('BingPreview') >= 0) {
+        updateMap(result, dataset.get('BingPreview'));
+        return true;
+      }
       if (ua.indexOf('Baidu') >= 0) {
         if (ua.indexOf('compatible; Baiduspider') >= 0 ||
             ua.indexOf('Baiduspider+') >= 0 ||
@@ -937,7 +994,9 @@
         }
       }
       if (ua.indexOf('Yeti') >= 0) {
-        if (ua.indexOf('http://help.naver.com/robots') >= 0) {
+        if (ua.indexOf('http://help.naver.com/robots') >= 0 ||
+            ua.indexOf('http://help.naver.com/support/robots.html') >= 0 ||
+            ua.indexOf('http://naver.me/bot') >= 0) {
           updateMap(result, dataset.get('Yeti'));
           return true;
         }
@@ -1012,6 +1071,10 @@
           updateMap(result, dataset.get('IndyLibrary'));
           return true;
         }
+      }
+      if (ua.indexOf('trendictionbot') >= 0) {
+        updateMap(result, dataset.get('trendictionbot'));
+        return true;
       }
       return false;
     };
@@ -1132,6 +1195,8 @@
         data = dataset.get('HTTPLibrary'); version = 'php';
       } else if (ua.indexOf('PEAR HTTP_Request class;') >= 0) {
         data = dataset.get('HTTPLibrary'); version = 'php';
+      } else if (ua.indexOf('curl/') >= 0) {
+        data = dataset.get('HTTPLibrary'); version = 'curl';
       }
       if (! data)
         return false;
@@ -1200,6 +1265,10 @@
     }
     function tryBrowser(userAgent, result) {
       if (browser.challengeMSIE(userAgent, result))
+        return true;
+      if (browser.challengeVivaldi(userAgent, result))
+        return true;
+      if (browser.challengeYandexBrowser(userAgent, result))
         return true;
       if (browser.challengeSafariChrome(userAgent, result))
         return true;
