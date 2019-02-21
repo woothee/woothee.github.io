@@ -73,10 +73,6 @@
               <th class="lib" data-lang="ruby">ruby</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
             </tr>
-            <tr id="jruby">
-              <th class="lib" data-lang="jruby">jruby:java</th>
-              <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
-            </tr>
             <tr id="perl">
               <th class="lib" data-lang="perl">perl</th>
               <td class="name"></td><td class="category"></td><td class="os"></td><td class="version"></td><td class="os_version"></td><td class="vendor"></td>
@@ -119,8 +115,7 @@
     function update(useragent){
       updateJavascript(useragent);
       updateAppEngineLang(useragent, 'java');
-      updateLang(useragent, 'ruby');
-      updateLang(useragent, 'jruby');
+      updateAppEngineLang(useragent, 'ruby');
       updateLang(useragent, 'perl');
       updateAppEngineLang(useragent, 'node');
       updateAppEngineLang(useragent, 'python');
