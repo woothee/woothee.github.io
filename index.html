@@ -116,11 +116,11 @@
       updateJavascript(useragent);
       updateAppEngineLang(useragent, 'java');
       updateAppEngineLang(useragent, 'ruby');
-      updateAppEngineLang(useragent, 'perl');
+      updateLangGAE(useragent, 'perl');
       updateAppEngineLang(useragent, 'node');
       updateAppEngineLang(useragent, 'python');
       updateAppEngineLang(useragent, 'php');
-      updateAppEngineLang(useragent, 'go');
+      updateLangGAE(useragent, 'go');
     }
     function updateRow(id, r, v){
       var row = $(id);
@@ -150,6 +150,10 @@
     }
     function updateAppEngineLang(useragent, lang){
       var url = "http://" + lang + ".woothee-demo.appspot.com";
+      fetch(useragent, url, lang);
+    }
+    function updateLangGAE(useragent, lang){
+      var url = "http://" + lang + "-demo-dot-woothee-demo.appspot.com";
       fetch(useragent, url, lang);
     }
     $(function(){
