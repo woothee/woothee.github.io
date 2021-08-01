@@ -139,16 +139,12 @@
           });
         })
     }
-    function updateLang(useragent, lang){
-      var url = "http://woothee-" + lang + ".tagomor.is";
-      fetch(useragent, url, lang);
-    }
     function updateAppEngineLang(useragent, lang){
-      var url = "http://" + lang + ".woothee-demo.appspot.com";
+      var url = "https://" + lang + ".woothee-demo.appspot.com";
       fetch(useragent, url, lang);
     }
     function updateLangGAE(useragent, lang){
-      var url = "http://" + lang + "-demo-dot-woothee-demo.appspot.com";
+      var url = "https://" + lang + "-demo-dot-woothee-demo.appspot.com";
       fetch(useragent, url, lang);
     }
     $(function(){
